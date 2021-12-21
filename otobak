@@ -149,10 +149,8 @@ while [[ true ]]; do
     "0")
     clear
     echo "$(tput setaf 11)--- $LOCATION_BACKUP ---"; tput sgr0;
-    tput setaf 165; ls -al "$LOCATION_BACKUP"; tput sgr0;
+    tput setaf 165; tree "$LOCATION_BACKUP"; tput sgr0;
     echo ""
-    echo "$(tput setaf 11)--- $LOCATION_BACKUP_CRON ---"; tput sgr0;
-    tput setaf 165; ls -al "$LOCATION_BACKUP_CRON"; tput sgr0;
     ;;
     "1")
     saveitemsPlacedInSettings
