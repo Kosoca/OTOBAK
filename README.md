@@ -20,4 +20,4 @@ cp path/of/file/otobak usr/bin/
 ```
 otobak
 ```
-###### If you desire to support me here, is my BTC address : bc1qsml80a58xx66atqvfc9vx675g26vgkcs4zdg89
+###### If you desire to support me, is my BTC address : bc1qsml80a58xx66atqvfc9vx675g26vgkcs4zdg89 (thx <3)
