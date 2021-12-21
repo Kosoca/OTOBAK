@@ -35,7 +35,7 @@ SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
 # EX : LIST_OF_ITEMS="home var etc bin"
-LIST_OF_ITEMS="JeSuisLeDossierASave"
+LIST_OF_ITEMS="home"
 #-----------------------------------------------#
 
 function checkFolderExisting {
