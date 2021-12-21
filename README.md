@@ -19,3 +19,5 @@ cp path/of/file/otobak usr/bin/
 #### 3. To call otobak execute 
 ```
 otobak
+```
+###### If you have the financial possibility and the desire to support me here is my XMR address
