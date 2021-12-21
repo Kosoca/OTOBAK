@@ -1,0 +1,416 @@
+#!/bin/bash
+
+#OTOBAK
+#VERSION : 1.1.0
+#ATHOR : Jérôme Bras
+
+#------------ PREPARATION OF OTOBAK -------------#
+
+#chmod +x path/of/file/otobak
+
+#cp path/of/file/otobak usr/bin/
+
+#----------- CONFIGURATION OF OTOBAK -----------#
+
+#NAME OF THE BACKUP FILE <-
+#PREFIX OF ANNOUNCEMENT MESSAGES <-
+#CONTOURING TEXT BOXES<-
+#FILE PATH WHERE ARE THE BACKUP STORES <- /!\
+#FOLDER PATH WHERE THE CRON BACKUP AREAS STORED <- /!\
+#SCP IDENTIFIER <-
+#SCP REMOTE DIRECTORY <-
+# ----- items à sauvegarder -----
+#DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
+
+#-----------------------------------------------#
+NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
+PREFIX="$(tput setaf 9)[OTOBAK]$(tput setaf 159) :$(tput sgr0)"
+BOWROW="#------------------------------#"
+LOCATION_BACKUP="backup" #/!\ Staying at the root is recommended, avoid changing this setting.
+LOCATION_BACKUP_CRON="backup/plan" #/!\ Staying at this path is recommended, avoid modifying this setting.
+SCP_DATA_SENDING="user@x.x.x.x"
+SCP_LOCATION_FOLDER="/my/scp/folder"
+LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
+# ----- Items to back up -----
+# EX : LIST_OF_ITEMS="home var etc bin"
+LIST_OF_ITEMS="var"
+#-----------------------------------------------#
+
+function checkFolderExisting {
+  if [[ ! -e "$LOCATION_BACKUP" ]]; then
+    echo "$PREFIX Folder $(tput setaf 249)$LOCATION_BACKUP $(tput sgr0)not exist."
+    mkdir $LOCATION_BACKUP
+    echo "$PREFIX Folder created."
+  else
+    echo "$PREFIX Folder $(tput setaf 249)$LOCATION_BACKUP $(tput sgr0)detected !"
+  fi
+  if [[ ! -e "$LOCATION_BACKUP_CRON" ]]; then
+    echo "$PREFIX Folder $(tput setaf 249)$LOCATION_BACKUP_CRON $(tput sgr0)not exist."
+    mkdir $LOCATION_BACKUP_CRON
+    echo "$PREFIX Folder created."
+  fi
+}
+
+function saveitemsPlacedInSettings {
+  clear
+  checkFolderExisting
+  stockNameFolder="AUTOBACKUP-$NAME_OF_ZIPPED_BACKUP"
+  mkdir "$LOCATION_BACKUP/$stockNameFolder/"
+  for item in $LIST_OF_ITEMS
+  do
+    echo "$PREFIX Backup of $(tput setaf 229)$item $(tput sgr0)in progress..."
+
+    tar -cjvf "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" $item >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
+    echo "#-------------------- $item --------------------#" >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
+
+    if [[ "$?" -eq "0" ]]; then
+      echo "$PREFIX Backup of $(tput setaf 229)$item $(tput setaf 47)successfully completed"; tput sgr0;
+      mv "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" "$LOCATION_BACKUP/$stockNameFolder/"
+    else
+      echo "$PREFIX $(tput setaf 1)Error $(tput sgr0)to backup of $(tput setaf 229)$item"; tput sgr0;
+    fi
+  done
+}
+
+function saveAllitems {
+  clear
+  checkFolderExisting
+  stockNameFolder="AUTOBACKUP-ALL-$NAME_OF_ZIPPED_BACKUP"
+  mkdir "$LOCATION_BACKUP/$stockNameFolder/"
+  for item in *
+  do
+    if [ "$item" == "$LOCATION_BACKUP" ] || [ "$item" == "run" ] || [ "$item" == "proc" ] || [ "$item" == "tmp" ] || [ "$item" == "sys" ]; then
+      continue
+    fi
+
+    echo "$PREFIX Backup of $(tput setaf 229)$item $(tput sgr0)in progress..."
+
+    tar -cjvf "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" $item >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
+    echo "#-------------------- $item --------------------#" >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
+
+    if [[ "$?" -eq "0" ]]; then
+      echo "$PREFIX Backup of $(tput setaf 229)$item $(tput setaf 47)successfully completed"; tput sgr0;
+      mv "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" "$LOCATION_BACKUP/$stockNameFolder/"
+    else
+      echo "$PREFIX $(tput setaf 1)Error $(tput sgr0)to backup of $(tput setaf 229)$item"; tput sgr0;
+    fi
+  done
+}
+
+#GUI#
+_user="$(whoami)"
+cd /
+clear
+if [[ "$_user" != "root" ]]; then
+  echo "$PREFIX Warning ! It is advisable to have administrator rights to use OTOBAK."
+fi
+
+checkFolderExisting
+
+while [[ true ]]; do
+  echo ""
+  echo "#----------- OTOBAK -----------#"; tput sgr0;
+  echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
+  echo "[$(tput setaf 6)ENTRER$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Clean your screen."; tput sgr0;
+  echo "[$(tput setaf 86)-01234$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Delete all backups."; tput sgr0;
+  echo "[$(tput setaf 86)0$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Display the contents of the folders $(tput setaf 2)$LOCATION_BACKUP$(tput setaf 47) and $(tput setaf 2)$LOCATION_BACKUP_CRON$(tput setaf 47)."; tput sgr0;
+  echo "[$(tput setaf 86)1$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Make a backup of the files placed in configuration."; tput sgr0;
+  echo "[$(tput setaf 86)2$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Perform a full backup of the system."; tput sgr0;
+  echo "[$(tput setaf 86)3$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Send $(tput setaf 2)$LOCATION_BACKUP$(tput setaf 47) on other server. (scp required, check configuration !)"; tput sgr0;
+  echo "[$(tput setaf 86)4$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Schedule a backup. (cron required)"; tput sgr0;
+  echo "$BOWROW"; tput sgr0;
+  echo "Enter an option :"; tput sgr0;
+  read resNum
+  echo "$BOWROW"; tput sgr0;
+  case $resNum in
+    "-01234")
+    echo "$PREFIX Do you want to delete $LOCATION_BACKUP ?"; tput sgr0;
+    echo "yes i want : Confirm"; tput sgr0;
+    echo "other : Exit"; tput sgr0;
+    read confirm
+    if [[ "$confirm" == "yes i want" ]]; then
+      rm -rf "$LOCATION_BACKUP"
+      echo "$PREFIX $LOCATION_BACKUP deleted."; tput sgr0;
+    else
+      echo "$PREFIX exit..."; tput sgr0;
+    fi
+    ;;
+    "0")
+    clear
+    echo "$(tput setaf 11)--- $LOCATION_BACKUP ---"; tput sgr0;
+    tput setaf 165; ls -al "$LOCATION_BACKUP"; tput sgr0;
+    echo ""
+    echo "$(tput setaf 11)--- $LOCATION_BACKUP_CRON ---"; tput sgr0;
+    tput setaf 165; ls -al "$LOCATION_BACKUP_CRON"; tput sgr0;
+    ;;
+    "1")
+    saveitemsPlacedInSettings
+    ;;
+
+    "2")
+    saveAllitems
+    ;;
+
+    "3")
+    scp -r "$LOCATION_BACKUP" $SCP_DATA_SENDING:$SCP_LOCATION_FOLDER
+    if [[ "$?" -eq "0" ]]; then
+      echo "$PREFIX Send $(tput setaf 229)$item $(tput setaf 47)successfully."; tput sgr0;
+    else
+      echo "$PREFIX $(tput setaf 1)Error $(tput sgr0) sending on $(tput setaf 229)$item$(tput sgr0)."; tput sgr0;
+    fi
+    ;;
+
+    "4")
+    while [[ true ]]; do
+      echo ""
+      echo "$PREFIX path of file cron : $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+      echo "";
+      echo "#--------- OTOBAK [4] ---------#"; tput sgr0;
+      echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
+      echo "[$(tput setaf 6)ENTRER$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Clean your screen."; tput sgr0;
+      echo "[$(tput setaf 86)0$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Saving from the items placed in configuration of the script."; tput sgr0;
+      echo "[$(tput setaf 86)1$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Full backup."; tput sgr0;
+      echo "$BOWROW";
+      echo "Enter an option :"; tput sgr0;
+      read resNum
+      echo "$BOWROW";
+      case $resNum in
+        "0")
+        clear
+        echo " ";
+        echo "$PREFIX Planning of tasks...";
+        echo "$PREFIX * <- This character means 'all'";
+        echo "(ex: Task every minute = * * * * * echo 'Every minute' in $LOCATION_FILE_CRON)";
+        echo " ";
+        echo "$PREFIX Minute ? (0 - 59 - *) : ";
+        read minute #=======================================================================
+        if [[ $minute =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$minute $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $minute == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$minute" != "*" ]]; then
+          if [ $minute -lt 0 ] || [ $minute -gt 59 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$minute $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Hour ? (0 - 23 - *) : ";
+        read hour #=======================================================================
+        if [[ $hour =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$hour $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $hour == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$hour" != "*" ]]; then
+          if [ $hour -lt 0 ] || [ $hour -gt 23 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$hour $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Day of month ? (1 - 31 - *) : ";
+        read dayOfMonth #=======================================================================
+        if [[ $dayOfMonth =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfMonth $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $dayOfMonth == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$dayOfMonth" != "*" ]]; then
+          if [ $dayOfMonth -lt 1 ] || [ $dayOfMonth -gt 31 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfMonth $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Month ? (1 - 12 - *) : ";
+        read month #=======================================================================
+        if [[ $month =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$month $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $month == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$month" != "*" ]]; then
+          if [ $month -lt 1 ] || [ $month -gt 12 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$month $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Day of week ? (0 - 6 - *) : ";
+        read dayOfWeek #=======================================================================
+        if [[ $dayOfWeek =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfWeek $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $dayOfWeek == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$dayOfWeek" != "*" ]]; then
+          if [ $dayOfWeek -lt 0 ] || [ $dayOfWeek -gt 6 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfWeek $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Comment of this backup ? (Only characters : a-z, A-Z, 0-9, -_., or empty) : ";
+        read comment #=======================================================================
+        if [[ $comment =~ [^-_.0123456789azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$comment $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        checkFolderExisting
+        for item in $LIST_OF_ITEMS
+        do
+          echo "$minute $hour $dayOfMonth $month $dayOfWeek tar -cjvf /$LOCATION_BACKUP_CRON/$item-$comment-$NAME_OF_ZIPPED_BACKUP.tar.bz2 /$item" >> "$LOCATION_FILE_CRON"
+          if [[ "$?" -eq "0" ]]; then
+            echo "$PREFIX Backup task for $(tput setaf 229)$item $(tput sgr0)executed $(tput setaf 47)successfully$(tput sgr0)."; tput sgr0;
+          else
+            echo "$PREFIX $(tput setaf 1)Error $(tput sgr0)of planning to $(tput setaf 229)$item"; tput sgr0;
+
+          fi
+        done
+        echo "$PREFIX $(service cron reload)";
+        ;;
+
+        "1")
+        clear
+        echo " ";
+        echo "$PREFIX Planning of tasks...";
+        echo "$PREFIX * <- This character means 'all'";
+        echo "(ex: Task every minute = * * * * * echo 'Every minute' in $LOCATION_FILE_CRON)";
+        echo " ";
+        echo "$PREFIX Minute ? (0 - 59 - *) : ";
+        read minute #=======================================================================
+        if [[ $minute =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$minute $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $minute == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$minute" != "*" ]]; then
+          if [ $minute -lt 0 ] || [ $minute -gt 59 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$minute $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Hour ? (0 - 23 - *) : ";
+        read hour #=======================================================================
+        if [[ $hour =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$hour $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $hour == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$hour" != "*" ]]; then
+          if [ $hour -lt 0 ] || [ $hour -gt 23 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$hour $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Day of month ? (1 - 31 - *) : ";
+        read dayOfMonth #=======================================================================
+        if [[ $dayOfMonth =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfMonth $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $dayOfMonth == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$dayOfMonth" != "*" ]]; then
+          if [ $dayOfMonth -lt 1 ] || [ $dayOfMonth -gt 31 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfMonth $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Month ? (1 - 12 - *) : ";
+        read month #=======================================================================
+        if [[ $month =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$month $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $month == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$month" != "*" ]]; then
+          if [ $month -lt 1 ] || [ $month -gt 12 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$month $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Day of week ? (0 - 6 - *) : ";
+        read dayOfWeek #=======================================================================
+        if [[ $dayOfWeek =~ [^*0123456789] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfWeek $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ $dayOfWeek == "" ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)empty $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        if [[ "$dayOfWeek" != "*" ]]; then
+          if [ $dayOfWeek -lt 0 ] || [ $dayOfWeek -gt 6 ]; then
+            echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$dayOfWeek $(tput sgr0)not valid."; tput sgr0;
+            break
+          fi
+        fi
+        echo "$PREFIX Comment of this backup ? (Only characters : a-z, A-Z, 0-9, -_., or empty) : ";
+        read comment #=======================================================================
+        if [[ $comment =~ [^-_.0123456789azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN] ]]; then
+          echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$comment $(tput sgr0)not valid."; tput sgr0;
+          break
+        fi
+        checkFolderExisting
+        for item in *
+        do
+          if [ "$item" == "$LOCATION_BACKUP" ] || [ "$item" == "run" ] || [ "$item" == "proc" ] || [ "$item" == "tmp" ] || [ "$item" == "sys" ]; then
+            continue
+          fi
+          echo "$minute $hour $dayOfMonth $month $dayOfWeek tar -cjvf /$LOCATION_BACKUP_CRON/$item-$comment-$NAME_OF_ZIPPED_BACKUP_CRON.tar.bz2 /$item" >> "$LOCATION_FILE_CRON"
+          if [[ "$?" -eq "0" ]]; then
+            echo "$PREFIX Backup task for $(tput setaf 229)$item $(tput sgr0)executed $(tput setaf 47)successfully$(tput sgr0)."; tput sgr0;
+          else
+            echo "$PREFIX $(tput setaf 1)Error $(tput sgr0)of planning to $(tput setaf 229)$item"; tput sgr0;
+          fi
+        done
+        echo "$PREFIX $(service cron reload)";
+        ;;
+
+        "")
+        clear
+        ;;
+
+        *)
+        clear
+        break;
+        ;;
+      esac
+    done
+    ;;
+
+    "")
+    clear
+    ;;
+
+    *)
+    clear
+    break;
+    ;;
+  esac
+done
+#END GUI#
