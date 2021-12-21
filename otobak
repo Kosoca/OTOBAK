@@ -23,6 +23,8 @@
 #DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
 
 #-----------------------------------------------#
+SHOW_SETTINGS_IN_GUI=true
+
 NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
 PREFIX="$(tput setaf 9)[OTOBAK]$(tput setaf 159) :$(tput sgr0)"
 BOWROW="#------------------------------#"
@@ -33,7 +35,7 @@ SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
 # EX : LIST_OF_ITEMS="home var etc bin"
-LIST_OF_ITEMS="home"
+LIST_OF_ITEMS="JeSuisLeDossierASave"
 #-----------------------------------------------#
 
 function checkFolderExisting {
@@ -109,6 +111,15 @@ checkFolderExisting
 
 while [[ true ]]; do
   echo ""
+  if [[ $SHOW_SETTINGS_IN_GUI == true ]]; then
+    echo "$(tput setaf 11)LOCATION_BACKUP $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP"; tput sgr0;
+    echo "$(tput setaf 11)LOCATION_BACKUP_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP_CRON"; tput sgr0;
+    echo "$(tput setaf 11)SCP_DATA_SENDING $(tput setaf 159)= $(tput setaf 165)$SCP_DATA_SENDING"; tput sgr0;
+    echo "$(tput setaf 11)SCP_LOCATION_FOLDER $(tput setaf 159)= $(tput setaf 165)$SCP_LOCATION_FOLDER"; tput sgr0;
+    echo "$(tput setaf 11)LOCATION_FILE_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+    echo "$(tput setaf 11)LIST_OF_ITEMS $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+    echo ""
+  fi
   echo "#----------- OTOBAK -----------#"; tput sgr0;
   echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
   echo "[$(tput setaf 6)ENTRER$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Clean your screen."; tput sgr0;
