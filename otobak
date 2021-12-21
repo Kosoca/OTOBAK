@@ -135,9 +135,10 @@ while [[ true ]]; do
   echo "$BOWROW"; tput sgr0;
   case $resNum in
     "-01234")
+    clear
     echo "$PREFIX Do you want to delete $LOCATION_BACKUP ?"; tput sgr0;
-    echo "yes i want : Confirm"; tput sgr0;
-    echo "other : Exit"; tput sgr0;
+    echo "$(tput setaf 166)yes i want$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Confirm."; tput sgr0;
+    echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
     read confirm
     if [[ "$confirm" == "yes i want" ]]; then
       rm -rf "$LOCATION_BACKUP"
@@ -148,19 +149,23 @@ while [[ true ]]; do
     ;;
     "0")
     clear
+    checkFolderExisting
     echo "$(tput setaf 11)--- $LOCATION_BACKUP ---"; tput sgr0;
     tput setaf 165; tree "$LOCATION_BACKUP"; tput sgr0;
     echo ""
     ;;
     "1")
+    clear
     saveitemsPlacedInSettings
     ;;
 
     "2")
+    clear
     saveAllitems
     ;;
 
     "3")
+    clear
     scp -r "$LOCATION_BACKUP" $SCP_DATA_SENDING:$SCP_LOCATION_FOLDER
     if [[ "$?" -eq "0" ]]; then
       echo "$PREFIX Send $(tput setaf 229)$item $(tput setaf 47)successfully."; tput sgr0;
@@ -171,20 +176,27 @@ while [[ true ]]; do
 
     "4")
     while [[ true ]]; do
+      clear
       echo ""
       echo "$PREFIX path of file cron : $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
       echo "";
       echo "#--------- OTOBAK [4] ---------#"; tput sgr0;
       echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
       echo "[$(tput setaf 6)ENTRER$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Clean your screen."; tput sgr0;
-      echo "[$(tput setaf 86)0$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Saving from the items placed in configuration of the script."; tput sgr0;
-      echo "[$(tput setaf 86)1$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Full backup."; tput sgr0;
+      echo "[$(tput setaf 86)0$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Show content of $(tput setaf 2)$LOCATION_FILE_CRON$(tput setaf 47)."; tput sgr0;
+      echo "[$(tput setaf 86)1$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Saving from the items placed in configuration of the script."; tput sgr0;
+      echo "[$(tput setaf 86)2$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Full backup."; tput sgr0;
       echo "$BOWROW";
       echo "Enter an option :"; tput sgr0;
       read resNum
       echo "$BOWROW";
       case $resNum in
         "0")
+        clear
+        cat $LOCATION_FILE_CRON
+        ;;
+
+        "1")
         clear
         echo " ";
         echo "$PREFIX Planning of tasks...";
@@ -291,7 +303,7 @@ while [[ true ]]; do
         echo "$PREFIX $(service cron reload)";
         ;;
 
-        "1")
+        "2")
         clear
         echo " ";
         echo "$PREFIX Planning of tasks...";
