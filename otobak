@@ -176,7 +176,6 @@ while [[ true ]]; do
 
     "4")
     while [[ true ]]; do
-      clear
       echo ""
       echo "$PREFIX path of file cron : $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
       echo "";
