@@ -20,3 +20,6 @@ cp path/of/file/otobak usr/bin/
 ```
 otobak
 ```
+
+###### If you want to support me, here is my BTC address : bc1qsml80a58xx66atqvfc9vx675g26vgkcs4zdg89
+
