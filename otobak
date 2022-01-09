@@ -19,11 +19,12 @@
 #FOLDER PATH WHERE THE CRON BACKUP AREAS STORED <- /!\
 #SCP IDENTIFIER (OPTION [3]) <-
 #SCP REMOTE DIRECTORY (OPTION [3]) <-
-# ----- items to backup -----
+# ----- items à sauvegarder -----
 #DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
 
 #-----------------------------------------------#
 SHOW_SETTINGS_IN_GUI=true
+BACK_TO_ROOT_ON_START=true
 
 NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
 PREFIX="$(tput setaf 9)[OTOBAK]$(tput setaf 159) :$(tput sgr0)"
@@ -35,7 +36,7 @@ SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
 # EX : LIST_OF_ITEMS="home var etc bin"
-LIST_OF_ITEMS="home"
+LIST_OF_ITEMS="JeSuisLeDossierASave"
 #-----------------------------------------------#
 
 function checkFolderExisting {
@@ -101,8 +102,11 @@ function saveAllitems {
 
 #GUI#
 _user="$(whoami)"
-cd /
 clear
+
+if [[ $BACK_TO_ROOT_ON_START == true ]]; then
+  cd /
+fi
 if [[ "$_user" != "root" ]]; then
   echo "$PREFIX Warning ! It is advisable to have administrator rights to use OTOBAK."
 fi
@@ -176,6 +180,7 @@ while [[ true ]]; do
 
     "4")
     while [[ true ]]; do
+      clear
       echo ""
       echo "$PREFIX path of file cron : $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
       echo "";
@@ -417,6 +422,7 @@ while [[ true ]]; do
 
         *)
         clear
+        echo "$PREFIX $(tput setaf 1)$resNum $(tput sgr0)is invalid, exit... ";
         break;
         ;;
       esac
@@ -429,6 +435,7 @@ while [[ true ]]; do
 
     *)
     clear
+    echo "$PREFIX $(tput setaf 1)$resNum $(tput sgr0)is invalid, exit... ";
     break;
     ;;
   esac
