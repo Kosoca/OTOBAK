@@ -5,6 +5,8 @@
 Otobak is a script allowing you to save your files and folders in a simple way.  
 **WARNING** *this script create a folder at your root*
 
+![otobak_gui](https://user-images.githubusercontent.com/59687626/148984632-54ab344e-f24c-40e7-a5e8-cc1b0dbd8f25.PNG)
+
 ## How to install ?
 
 ### Enter this commands in your terminal :
