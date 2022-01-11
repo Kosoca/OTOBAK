@@ -100,6 +100,19 @@ function saveAllitems {
   done
 }
 
+function showSettings {
+  echo "$(tput setaf 11)SHOW_SETTINGS_IN_GUI $(tput setaf 159)= $(tput setaf 165)$SHOW_SETTINGS_IN_GUI"; tput sgr0;
+  echo "$(tput setaf 11)BACK_TO_ROOT_ON_START $(tput setaf 159)= $(tput setaf 165)$BACK_TO_ROOT_ON_START"; tput sgr0;
+  echo ""
+  echo "$(tput setaf 11)LOCATION_BACKUP $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP"; tput sgr0;
+  echo "$(tput setaf 11)LOCATION_BACKUP_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP_CRON"; tput sgr0;
+  echo "$(tput setaf 11)SCP_DATA_SENDING $(tput setaf 159)= $(tput setaf 165)$SCP_DATA_SENDING"; tput sgr0;
+  echo "$(tput setaf 11)SCP_LOCATION_FOLDER $(tput setaf 159)= $(tput setaf 165)$SCP_LOCATION_FOLDER"; tput sgr0;
+  echo "$(tput setaf 11)LOCATION_FILE_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+  echo "$(tput setaf 11)LIST_OF_ITEMS $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+  echo ""
+}
+
 #GUI#
 _user="$(whoami)"
 clear
@@ -116,13 +129,7 @@ checkFolderExisting
 while [[ true ]]; do
   echo ""
   if [[ $SHOW_SETTINGS_IN_GUI == true ]]; then
-    echo "$(tput setaf 11)LOCATION_BACKUP $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP"; tput sgr0;
-    echo "$(tput setaf 11)LOCATION_BACKUP_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP_CRON"; tput sgr0;
-    echo "$(tput setaf 11)SCP_DATA_SENDING $(tput setaf 159)= $(tput setaf 165)$SCP_DATA_SENDING"; tput sgr0;
-    echo "$(tput setaf 11)SCP_LOCATION_FOLDER $(tput setaf 159)= $(tput setaf 165)$SCP_LOCATION_FOLDER"; tput sgr0;
-    echo "$(tput setaf 11)LOCATION_FILE_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
-    echo "$(tput setaf 11)LIST_OF_ITEMS $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
-    echo ""
+    showSettings
   fi
   echo "#----------- OTOBAK -----------#"; tput sgr0;
   echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
