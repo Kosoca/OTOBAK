@@ -14,7 +14,7 @@ chmod +x path/of/file/otobak
 ```
 #### 2. copy otobak in your command folder
 ```
-cp path/of/file/otobak usr/bin/
+cp path/of/file/otobak /usr/bin/
 ```
 #### 3. To call otobak execute 
 ```
