@@ -109,7 +109,7 @@ function showSettings {
   echo "$(tput setaf 11)SCP_DATA_SENDING $(tput setaf 159)= $(tput setaf 165)$SCP_DATA_SENDING"; tput sgr0;
   echo "$(tput setaf 11)SCP_LOCATION_FOLDER $(tput setaf 159)= $(tput setaf 165)$SCP_LOCATION_FOLDER"; tput sgr0;
   echo "$(tput setaf 11)LOCATION_FILE_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
-  echo "$(tput setaf 11)LIST_OF_ITEMS $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+  echo "$(tput setaf 11)LIST_OF_ITEMS $(tput setaf 159)= $(tput setaf 165)$LIST_OF_ITEMS"; tput sgr0;
   echo ""
 }
 
