@@ -19,7 +19,7 @@
 #FOLDER PATH WHERE THE CRON BACKUP AREAS STORED <- /!\
 #SCP IDENTIFIER (OPTION [3]) <-
 #SCP REMOTE DIRECTORY (OPTION [3]) <-
-# ----- items à sauvegarder -----
+# ----- Items to back up -----
 #DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
 
 #-----------------------------------------------#
