@@ -36,6 +36,7 @@ SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
 # EX : LIST_OF_ITEMS="home var etc bin"
+# NOT THIS /!\ LIST_OF_ITEMS="home/myrepo var/my/file etc/this/folder"
 LIST_OF_ITEMS="home"
 #-----------------------------------------------#
 
