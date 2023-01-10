@@ -24,7 +24,7 @@
 
 #-----------------------------------------------#
 SHOW_SETTINGS_IN_GUI=true
-SHOW_INFORMATION_SYSTEM=true
+SHOW_INFORMATION_SYSTEM=false
 BACK_TO_ROOT_ON_START=false
 
 NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
