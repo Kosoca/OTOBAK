@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #OTOBAK
-#VERSION : 1.2.0
+#VERSION : 1.3.0
 #ATHOR : Jérôme Bras
 
 #------------ PREPARATION OF OTOBAK -------------#
@@ -23,8 +23,7 @@
 #DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
 
 #-----------------------------------------------#
-SHOW_SETTINGS_IN_GUI=true
-SHOW_INFORMATION_SYSTEM=false
+SHOW_SETTINGS_IN_GUI=false
 BACK_TO_ROOT_ON_START=false
 
 NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
@@ -110,7 +109,6 @@ function saveAllitems {
 
 function showSettings {
   echo "$(tput setaf 11)SHOW_SETTINGS_IN_GUI $(tput setaf 159)= $(tput setaf 165)$SHOW_SETTINGS_IN_GUI"; tput sgr0;
-  echo "$(tput setaf 11)SHOW_INFORMATION_SYSTEM $(tput setaf 159)= $(tput setaf 165)$SHOW_INFORMATION_SYSTEM"; tput sgr0;
   echo "$(tput setaf 11)BACK_TO_ROOT_ON_START $(tput setaf 159)= $(tput setaf 165)$BACK_TO_ROOT_ON_START"; tput sgr0;
   echo ""
   echo "$(tput setaf 11)LOCATION_BACKUP $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP"; tput sgr0;
@@ -141,12 +139,6 @@ while [[ true ]]; do
   if [[ $SHOW_SETTINGS_IN_GUI == true ]]; then
     showSettings
   fi
-  if [[ $SHOW_INFORMATION_SYSTEM == true ]]; then
-    tput setaf 6 
-    hostnamectl 
-    tput sgr0
-    echo ""
-  fi
   echo "#----------- OTOBAK -----------#"; tput sgr0;
   echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
   echo "[$(tput setaf 6)ENTRER$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Clean your screen."; tput sgr0;
@@ -156,6 +148,9 @@ while [[ true ]]; do
   echo "[$(tput setaf 86)2$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Perform a full backup of the system."; tput sgr0;
   echo "[$(tput setaf 86)3$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Send $(tput setaf 2)$LOCATION_BACKUP$(tput setaf 47) on other server. (scp required, check configuration !)"; tput sgr0;
   echo "[$(tput setaf 86)4$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Schedule a backup. (cron required)"; tput sgr0;
+  echo "[$(tput setaf 86)-$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Reload of script OTOBAK."; tput sgr0;
+  echo "[$(tput setaf 86)+$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Settings of script OTOBAK."; tput sgr0;
+  echo "[$(tput setaf 86)*$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Informations of your system."; tput sgr0;
   echo "$BOWROW"; tput sgr0;
   echo "Enter an option :"; tput sgr0;
   read resNum
@@ -173,6 +168,19 @@ while [[ true ]]; do
     else
       echo "$PREFIX exit..."; tput sgr0;
     fi
+    ;;
+    "-")
+    ./$(basename $0) && exit
+    ;;
+    "+")
+    clear
+    showSettings
+    ;;
+    "*")
+    clear
+    tput setaf 6 
+    hostnamectl 
+    tput sgr0
     ;;
     "0")
     clear
