@@ -23,21 +23,21 @@
 #DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
 
 #-----------------------------------------------#
-SHOW_SETTINGS_IN_GUI=true
-BACK_TO_ROOT_ON_START=true
+SHOW_SETTINGS_IN_GUI=false
+SHOW_INFORMATION_SYSTEM=false
+BACK_TO_ROOT_ON_START=false
 
 NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
 PREFIX="$(tput setaf 9)[OTOBAK]$(tput setaf 159) :$(tput sgr0)"
 BOWROW="#------------------------------#"
-LOCATION_BACKUP="backup" #/!\ Staying at the root is recommended, avoid changing this setting.
-LOCATION_BACKUP_CRON="backup/plan" #/!\ Staying at this path is recommended, avoid modifying this setting.
+LOCATION_BACKUP="backup-otobak" #/!\ Staying at the root is recommended, avoid changing this setting.
+LOCATION_BACKUP_CRON="$LOCATION_BACKUP/plan" #/!\ Staying at this path is recommended, avoid modifying this setting.
 SCP_DATA_SENDING="user@x.x.x.x"
 SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
-# EX : LIST_OF_ITEMS="home var etc bin"
-# NOT THIS /!\ LIST_OF_ITEMS="home/myrepo var/my/file etc/this/folder"
-LIST_OF_ITEMS="home"
+# EX : LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
+LIST_OF_SAVED_FILES="/home/oo/Documents/DEV/SHELL/poire/pepins /home/oo/Documents/DEV/SHELL/pomme"
 #-----------------------------------------------#
 
 function checkFolderExisting {
@@ -60,16 +60,19 @@ function saveitemsPlacedInSettings {
   checkFolderExisting
   stockNameFolder="AUTOBACKUP-$NAME_OF_ZIPPED_BACKUP"
   mkdir "$LOCATION_BACKUP/$stockNameFolder/"
-  for item in $LIST_OF_ITEMS
+  for item in $LIST_OF_SAVED_FILES
   do
     echo "$PREFIX Backup of $(tput setaf 229)$item $(tput sgr0)in progress..."
 
-    tar -cjvf "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" $item >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
+    parcedItem="$(awk -F/ '{print $NF}' <<< $item)"
+    parcedPath="$(echo $item | sed s/$parcedItem//)"
+
+    tar -cjvf "$LOCATION_BACKUP/$parcedItem-$NAME_OF_ZIPPED_BACKUP.tar.bz2" -P $item >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
     echo "#-------------------- $item --------------------#" >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
 
     if [[ "$?" -eq "0" ]]; then
       echo "$PREFIX Backup of $(tput setaf 229)$item $(tput setaf 47)successfully completed"; tput sgr0;
-      mv "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" "$LOCATION_BACKUP/$stockNameFolder/"
+      mv "$LOCATION_BACKUP/$parcedItem-$NAME_OF_ZIPPED_BACKUP.tar.bz2" "$LOCATION_BACKUP/$stockNameFolder/"
     else
       echo "$PREFIX $(tput setaf 1)Error $(tput sgr0)to backup of $(tput setaf 229)$item"; tput sgr0;
     fi
@@ -83,18 +86,22 @@ function saveAllitems {
   mkdir "$LOCATION_BACKUP/$stockNameFolder/"
   for item in *
   do
+
+    parcedItem="$(awk -F/ '{print $NF}' <<< $item)"
+    parcedPath="$(echo $item | sed s/$parcedItem//)"
+
     if [ "$item" == "$LOCATION_BACKUP" ] || [ "$item" == "run" ] || [ "$item" == "proc" ] || [ "$item" == "tmp" ] || [ "$item" == "sys" ]; then
       continue
     fi
 
     echo "$PREFIX Backup of $(tput setaf 229)$item $(tput sgr0)in progress..."
 
-    tar -cjvf "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" $item >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
+    tar -cjvf "$LOCATION_BACKUP/$parcedItem-$NAME_OF_ZIPPED_BACKUP.tar.bz2" -P $item >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
     echo "#-------------------- $item --------------------#" >> "$LOCATION_BACKUP/$stockNameFolder/log-$NAME_OF_ZIPPED_BACKUP"
 
     if [[ "$?" -eq "0" ]]; then
       echo "$PREFIX Backup of $(tput setaf 229)$item $(tput setaf 47)successfully completed"; tput sgr0;
-      mv "$LOCATION_BACKUP/$item-$NAME_OF_ZIPPED_BACKUP.tar.bz2" "$LOCATION_BACKUP/$stockNameFolder/"
+      mv "$LOCATION_BACKUP/$parcedItem-$NAME_OF_ZIPPED_BACKUP.tar.bz2" "$LOCATION_BACKUP/$stockNameFolder/"
     else
       echo "$PREFIX $(tput setaf 1)Error $(tput sgr0)to backup of $(tput setaf 229)$item"; tput sgr0;
     fi
@@ -103,6 +110,7 @@ function saveAllitems {
 
 function showSettings {
   echo "$(tput setaf 11)SHOW_SETTINGS_IN_GUI $(tput setaf 159)= $(tput setaf 165)$SHOW_SETTINGS_IN_GUI"; tput sgr0;
+  echo "$(tput setaf 11)SHOW_INFORMATION_SYSTEM $(tput setaf 159)= $(tput setaf 165)$SHOW_INFORMATION_SYSTEM"; tput sgr0;
   echo "$(tput setaf 11)BACK_TO_ROOT_ON_START $(tput setaf 159)= $(tput setaf 165)$BACK_TO_ROOT_ON_START"; tput sgr0;
   echo ""
   echo "$(tput setaf 11)LOCATION_BACKUP $(tput setaf 159)= $(tput setaf 165)$LOCATION_BACKUP"; tput sgr0;
@@ -110,7 +118,7 @@ function showSettings {
   echo "$(tput setaf 11)SCP_DATA_SENDING $(tput setaf 159)= $(tput setaf 165)$SCP_DATA_SENDING"; tput sgr0;
   echo "$(tput setaf 11)SCP_LOCATION_FOLDER $(tput setaf 159)= $(tput setaf 165)$SCP_LOCATION_FOLDER"; tput sgr0;
   echo "$(tput setaf 11)LOCATION_FILE_CRON $(tput setaf 159)= $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
-  echo "$(tput setaf 11)LIST_OF_ITEMS $(tput setaf 159)= $(tput setaf 165)$LIST_OF_ITEMS"; tput sgr0;
+  echo "$(tput setaf 11)LIST_OF_SAVED_FILES $(tput setaf 159)= $(tput setaf 165)$LIST_OF_SAVED_FILES"; tput sgr0;
   echo ""
 }
 
@@ -121,6 +129,7 @@ clear
 if [[ $BACK_TO_ROOT_ON_START == true ]]; then
   cd /
 fi
+
 if [[ "$_user" != "root" ]]; then
   echo "$PREFIX Warning ! It is advisable to have administrator rights to use OTOBAK."
 fi
@@ -131,6 +140,12 @@ while [[ true ]]; do
   echo ""
   if [[ $SHOW_SETTINGS_IN_GUI == true ]]; then
     showSettings
+  fi
+  if [[ $SHOW_INFORMATION_SYSTEM == true ]]; then
+    tput setaf 6 
+    hostnamectl 
+    tput sgr0
+    echo ""
   fi
   echo "#----------- OTOBAK -----------#"; tput sgr0;
   echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
@@ -302,7 +317,7 @@ while [[ true ]]; do
           break
         fi
         checkFolderExisting
-        for item in $LIST_OF_ITEMS
+        for item in $LIST_OF_SAVED_FILES
         do
           echo "$minute $hour $dayOfMonth $month $dayOfWeek tar -cjvf /$LOCATION_BACKUP_CRON/$item-$comment-$NAME_OF_ZIPPED_BACKUP.tar.bz2 /$item" >> "$LOCATION_FILE_CRON"
           if [[ "$?" -eq "0" ]]; then
