@@ -23,8 +23,8 @@
 #DESIRED DIRECTORY FOR A BACKUP (OPTION [1]) <-
 
 #-----------------------------------------------#
-SHOW_SETTINGS_IN_GUI=false
-SHOW_INFORMATION_SYSTEM=false
+SHOW_SETTINGS_IN_GUI=true
+SHOW_INFORMATION_SYSTEM=true
 BACK_TO_ROOT_ON_START=false
 
 NAME_OF_ZIPPED_BACKUP="$(date +%X-%Y-%m-%d)"
