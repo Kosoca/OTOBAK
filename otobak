@@ -40,17 +40,20 @@ LIST_OF_SAVED_FILES="/home/oo/Documents/DEV/SHELL/poire/pepins /home/oo/Document
 #-----------------------------------------------#
 
 function checkFolderExisting {
-  if [[ ! -e "$LOCATION_BACKUP" ]]; then
+  if [[ ! -d "$LOCATION_BACKUP" ]]; then
     echo "$PREFIX Folder $(tput setaf 249)$LOCATION_BACKUP $(tput sgr0)not exist."
     mkdir $LOCATION_BACKUP
     echo "$PREFIX Folder created."
   else
     echo "$PREFIX Folder $(tput setaf 249)$LOCATION_BACKUP $(tput sgr0)detected !"
   fi
-  if [[ ! -e "$LOCATION_BACKUP_CRON" ]]; then
-    echo "$PREFIX Folder $(tput setaf 249)$LOCATION_BACKUP_CRON $(tput sgr0)not exist."
+  if [[ ! -d "$LOCATION_BACKUP_CRON" ]]; then
+    echo "$PREFIX File $(tput setaf 249)$LOCATION_BACKUP_CRON $(tput sgr0)not exist."
     mkdir $LOCATION_BACKUP_CRON
-    echo "$PREFIX Folder created."
+    echo "$PREFIX File created."
+  fi
+  if [[ ! -e "$LOCATION_FILE_CRON" ]]; then
+    echo "$PREFIX File $(tput setaf 249)$LOCATION_FILE_CRON $(tput sgr0)not exist."
   fi
 }
 
@@ -171,6 +174,16 @@ while [[ true ]]; do
     ;;
     "-")
     ./$(basename $0) && exit
+
+    if [[ "$?" -eq "0" ]]; then
+      echo "$PREFIX $(tput setaf 47)Success $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
+    else
+      $(basename $0) && exit
+      if [[ "$?" -eq "0" ]]; then
+        echo "$PREFIX $(tput setaf 47)Success $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
+      fi
+      echo "$PREFIX $(tput setaf 1)Error $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
+    fi
     ;;
     "+")
     clear
@@ -318,7 +331,7 @@ while [[ true ]]; do
             break
           fi
         fi
-        echo "$PREFIX Comment of this backup ? (Only characters : a-z, A-Z, 0-9, -_., or empty) : ";
+        echo "$PREFIX Comment of this backup ? (Only characters (not space) : a-z, A-Z, 0-9, -_., or empty) : ";
         read comment #=======================================================================
         if [[ $comment =~ [^-_.0123456789azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN] ]]; then
           echo "$PREFIX $(tput setaf 1)Error $(tput setaf 229)$comment $(tput sgr0)not valid."; tput sgr0;
