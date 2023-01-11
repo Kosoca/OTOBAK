@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #OTOBAK
-#VERSION : 1.3.0
+#VERSION : 1.3.1
 #ATHOR : Jérôme Bras
 
 #------------ PREPARATION OF OTOBAK -------------#
@@ -35,9 +35,22 @@ SCP_DATA_SENDING="user@x.x.x.x"
 SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
-# EX : LIST_OF_SAVED_FILES="/home/myrepo /var/my/file /etc/this/folder"
-LIST_OF_SAVED_FILES="/home/myrepo /var/my/file /etc/this/folder"
+# EX : LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
+LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
 #-----------------------------------------------#
+
+function reloadScript {
+  ./$(basename $0) && exit
+  if [[ "$?" -eq "0" ]]; then
+    echo "$PREFIX $(tput setaf 47)Success $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
+  else
+    $(basename $0) && exit
+    if [[ "$?" -eq "0" ]]; then
+      echo "$PREFIX $(tput setaf 47)Success $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
+    fi
+    echo "$PREFIX $(tput setaf 1)Error $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
+  fi
+}
 
 function checkFolderExisting {
   if [[ ! -d "$LOCATION_BACKUP" ]]; then
@@ -173,17 +186,7 @@ while [[ true ]]; do
     fi
     ;;
     "-")
-    ./$(basename $0) && exit
-
-    if [[ "$?" -eq "0" ]]; then
-      echo "$PREFIX $(tput setaf 47)Success $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
-    else
-      $(basename $0) && exit
-      if [[ "$?" -eq "0" ]]; then
-        echo "$PREFIX $(tput setaf 47)Success $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
-      fi
-      echo "$PREFIX $(tput setaf 1)Error $(tput sgr0) of reloading $(tput sgr0)."; tput sgr0;
-    fi
+    reloadScript
     ;;
     "+")
     clear
@@ -204,11 +207,13 @@ while [[ true ]]; do
     ;;
     "1")
     clear
+    reloadScript
     saveitemsPlacedInSettings
     ;;
 
     "2")
     clear
+    reloadScript
     saveAllitems
     ;;
 
