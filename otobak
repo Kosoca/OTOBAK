@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #OTOBAK
-#VERSION : 1.3.1
+#VERSION : 1.3.0
 #ATHOR : Jérôme Bras
 
 #------------ PREPARATION OF OTOBAK -------------#
@@ -35,8 +35,8 @@ SCP_DATA_SENDING="user@x.x.x.x"
 SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
-#LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
-LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
+# EX : LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
+LIST_OF_SAVED_FILES="/home/oo/Documents/DEV/SHELL/poire /home/oo/Documents/DEV/SHELL/pomme/pepins"
 #-----------------------------------------------#
 
 function reloadScript {
@@ -229,7 +229,12 @@ while [[ true ]]; do
     while [[ true ]]; do
       clear
       echo ""
-      echo "$PREFIX path of file cron : $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+      if [[ ! -e "$LOCATION_FILE_CRON" ]]; then
+        echo "$PREFIX File $(tput setaf 1)$LOCATION_FILE_CRON $(tput sgr0)not exist !"
+        echo "$PREFIX Create this file and reload script for execute this option."
+      else
+        echo "$PREFIX path of file cron : $(tput setaf 165)$LOCATION_FILE_CRON"; tput sgr0;
+      fi
       echo "";
       echo "#--------- OTOBAK [4] ---------#"; tput sgr0;
       echo "$(tput setaf 1)other$(tput sgr0) $(tput setaf 159): $(tput setaf 47)Exit."; tput sgr0;
@@ -237,6 +242,7 @@ while [[ true ]]; do
       echo "[$(tput setaf 86)0$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Show content of $(tput setaf 2)$LOCATION_FILE_CRON$(tput setaf 47)."; tput sgr0;
       echo "[$(tput setaf 86)1$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Saving from the items placed in configuration of the script."; tput sgr0;
       echo "[$(tput setaf 86)2$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Full backup."; tput sgr0;
+      echo "[$(tput setaf 86)3$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Create file of crontabs."; tput sgr0;
       echo "$BOWROW";
       echo "Enter an option :"; tput sgr0;
       read resNum
