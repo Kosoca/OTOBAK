@@ -242,7 +242,6 @@ while [[ true ]]; do
       echo "[$(tput setaf 86)0$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Show content of $(tput setaf 2)$LOCATION_FILE_CRON$(tput setaf 47)."; tput sgr0;
       echo "[$(tput setaf 86)1$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Saving from the items placed in configuration of the script."; tput sgr0;
       echo "[$(tput setaf 86)2$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Full backup."; tput sgr0;
-      echo "[$(tput setaf 86)3$(tput sgr0)] $(tput setaf 159): $(tput setaf 47)Create file of crontabs."; tput sgr0;
       echo "$BOWROW";
       echo "Enter an option :"; tput sgr0;
       read resNum
