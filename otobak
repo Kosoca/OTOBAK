@@ -36,7 +36,7 @@ SCP_LOCATION_FOLDER="/my/scp/folder"
 LOCATION_FILE_CRON="var/spool/cron/crontabs/root"
 # ----- Items to back up -----
 # EX : LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
-LIST_OF_SAVED_FILES="/home/oo/Documents/DEV/SHELL/poire /home/oo/Documents/DEV/SHELL/pomme/pepins"
+LIST_OF_SAVED_FILES="home/myrepo var/my/file etc/this/folder"
 #-----------------------------------------------#
 
 function reloadScript {
